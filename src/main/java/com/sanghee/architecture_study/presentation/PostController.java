@@ -9,8 +9,10 @@ import com.sanghee.architecture_study.application.dto.PostSummaryDto;
 import com.sanghee.architecture_study.application.query.PostGetQuery;
 import com.sanghee.architecture_study.presentation.request.PostCreateRequest;
 import com.sanghee.architecture_study.presentation.request.PostUpdateRequest;
-import com.sanghee.architecture_study.presentation.response.PostResponse;
+import com.sanghee.architecture_study.presentation.response.PostCreateResponse;
+import com.sanghee.architecture_study.presentation.response.PostGetResponse;
 import com.sanghee.architecture_study.presentation.response.PostSummaryResponse;
+import com.sanghee.architecture_study.presentation.response.PostUpdateResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,20 +39,16 @@ public class PostController {
     public ResponseEntity<List<PostSummaryResponse>> getPosts() {
         List<PostSummaryDto> summaries = postService.getPostSummaries();
         List<PostSummaryResponse> response = summaries.stream()
-                .map(dto -> new PostSummaryResponse(
-                        dto.id(),
-                        dto.title(),
-                        dto.commentCount()
-                ))
+                .map(dto -> new PostSummaryResponse(dto.id(), dto.title(), dto.commentCount()))
                 .toList();
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/posts/{id}")
-    public ResponseEntity<PostResponse> getPost(@PathVariable int id) {
+    public ResponseEntity<PostGetResponse> getPost(@PathVariable int id) {
         PostDto postDto = postService.getPost(new PostGetQuery(id));
         return ResponseEntity.ok(
-                new PostResponse(
+                new PostGetResponse(
                         postDto.id(),
                         postDto.title(),
                         postDto.content()
@@ -59,7 +57,7 @@ public class PostController {
     }
 
     @PostMapping("/posts")
-    public ResponseEntity<PostResponse> createPost(@RequestBody PostCreateRequest postCreateRequest) {
+    public ResponseEntity<PostCreateResponse> createPost(@RequestBody PostCreateRequest postCreateRequest) {
         PostDto postDto = postService.createPost(
                 new PostCreateCommand(
                         postCreateRequest.title(),
@@ -73,7 +71,7 @@ public class PostController {
                 .toUri();
 
         return ResponseEntity.created(location).body(
-                new PostResponse(
+                new PostCreateResponse(
                         postDto.id(),
                         postDto.title(),
                         postDto.content()
@@ -82,7 +80,7 @@ public class PostController {
     }
 
     @PutMapping("/posts/{id}")
-    public ResponseEntity<PostResponse> updatePost(@PathVariable int id, @RequestBody PostUpdateRequest postUpdateRequest) {
+    public ResponseEntity<PostUpdateResponse> updatePost(@PathVariable int id, @RequestBody PostUpdateRequest postUpdateRequest) {
         PostDto postDto = postService.updatePost(
                 new PostUpdateCommand(
                         id,
@@ -91,7 +89,7 @@ public class PostController {
                 )
         );
         return ResponseEntity.ok(
-                new PostResponse(
+                new PostUpdateResponse(
                         postDto.id(),
                         postDto.title(),
                         postDto.content()

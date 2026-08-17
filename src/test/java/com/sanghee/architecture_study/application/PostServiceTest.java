@@ -43,20 +43,20 @@ class PostServiceTest {
         // given
         PostCreateCommand command = new PostCreateCommand("게시글 등록 테스트", "테스트 시작합니다.");
         given(postRepository.createPost(any(Post.class)))
-                .willReturn(new Post(1, "게시글 등록 테스트", "테스트 시작합니다."));
+                .willReturn(new Post(1, command.title(), command.content()));
 
         // when
         PostDto result = postService.createPost(command);
 
         // then
         assertThat(result.id()).isEqualTo(1);
-        assertThat(result.title()).isEqualTo("게시글 등록 테스트");
-        assertThat(result.content()).isEqualTo("테스트 시작합니다.");
+        assertThat(result.title()).isEqualTo(command.title());
+        assertThat(result.content()).isEqualTo(command.content());
 
         ArgumentCaptor<Post> postCaptor = ArgumentCaptor.forClass(Post.class);
         verify(postRepository).createPost(postCaptor.capture());
-        assertThat(postCaptor.getValue().getTitle()).isEqualTo("게시글 등록 테스트");
-        assertThat(postCaptor.getValue().getContent()).isEqualTo("테스트 시작합니다.");
+        assertThat(postCaptor.getValue().getTitle()).isEqualTo(command.title());
+        assertThat(postCaptor.getValue().getContent()).isEqualTo(command.content());
     }
 
     @Test

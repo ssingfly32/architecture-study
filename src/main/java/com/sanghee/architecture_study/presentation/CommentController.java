@@ -8,7 +8,9 @@ import com.sanghee.architecture_study.application.dto.CommentDto;
 import com.sanghee.architecture_study.application.query.CommentListQuery;
 import com.sanghee.architecture_study.presentation.request.CommentCreateRequest;
 import com.sanghee.architecture_study.presentation.request.CommentUpdateRequest;
-import com.sanghee.architecture_study.presentation.response.CommentResponse;
+import com.sanghee.architecture_study.presentation.response.CommentCreateResponse;
+import com.sanghee.architecture_study.presentation.response.CommentGetResponse;
+import com.sanghee.architecture_study.presentation.response.CommentUpdateResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +34,7 @@ public class CommentController {
     }
 
     @PostMapping("/posts/{postId}/comments")
-    public ResponseEntity<CommentResponse> createComment(
+    public ResponseEntity<CommentCreateResponse> createComment(
             @PathVariable int postId,
             @RequestBody CommentCreateRequest commentCreateRequest
     ) {
@@ -46,25 +48,21 @@ public class CommentController {
                 .toUri();
 
         return ResponseEntity.created(location).body(
-                new CommentResponse(commentDto.id(), commentDto.postId(), commentDto.content())
+                new CommentCreateResponse(commentDto.id(), commentDto.postId(), commentDto.content())
         );
     }
 
     @GetMapping("/posts/{postId}/comments")
-    public ResponseEntity<List<CommentResponse>> getComments(@PathVariable int postId) {
+    public ResponseEntity<List<CommentGetResponse>> getComments(@PathVariable int postId) {
         List<CommentDto> comments = commentService.getComments(new CommentListQuery(postId));
-        List<CommentResponse> response = comments.stream()
-                .map(dto -> new CommentResponse(
-                        dto.id(),
-                        dto.postId(),
-                        dto.content()
-                ))
+        List<CommentGetResponse> response = comments.stream()
+                .map(dto -> new CommentGetResponse(dto.id(), dto.postId(), dto.content()))
                 .toList();
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/posts/{postId}/comments/{commentId}")
-    public ResponseEntity<CommentResponse> updateComment(
+    public ResponseEntity<CommentUpdateResponse> updateComment(
             @PathVariable int postId,
             @PathVariable int commentId,
             @RequestBody CommentUpdateRequest commentUpdateRequest
@@ -76,7 +74,7 @@ public class CommentController {
                         commentUpdateRequest.content())
         );
         return ResponseEntity.ok(
-                new CommentResponse(
+                new CommentUpdateResponse(
                         commentDto.id(),
                         commentDto.postId(),
                         commentDto.content()

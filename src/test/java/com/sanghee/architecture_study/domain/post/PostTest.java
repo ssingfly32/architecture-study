@@ -7,7 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 // Post는 아무 협력 객체(Repository 등)에도 의존하지 않는 순수한 도메인 객체라서,
-// Mock이 하나도 필요 없는 가장 단순한 형태의 단위 테스트다.
+// Mock이 하나도 필요 없는 가장 단순한 형태의 단위 테스트다. -> 테스트 코드 작성 용이
 @DisplayName("Post 도메인 단위 테스트")
 class PostTest {
 

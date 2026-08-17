@@ -1,5 +1,6 @@
 package com.sanghee.architecture_study.domain.post;
 
+// POJO: plain of java object
 public class Post {
     private final Integer id;
     private final String title;

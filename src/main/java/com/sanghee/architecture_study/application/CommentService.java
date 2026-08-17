@@ -32,7 +32,11 @@ public class CommentService {
         Comment comment = commentRepository.createComment(
                 Comment.create(commentCreateCommand.postId(), commentCreateCommand.content())
         );
-        return new CommentDto(comment.getId(), comment.getPostId(), comment.getContent());
+        return new CommentDto(
+                comment.getId(),
+                comment.getPostId(),
+                comment.getContent()
+        );
     }
 
     @Transactional(readOnly = true)
@@ -41,7 +45,11 @@ public class CommentService {
                 .orElseThrow(() -> new RuntimeException("post not found"));
 
         return commentRepository.getCommentsByPostId(commentListQuery.postId()).stream()
-                .map(comment -> new CommentDto(comment.getId(), comment.getPostId(), comment.getContent()))
+                .map(comment -> new CommentDto(
+                        comment.getId(),
+                        comment.getPostId(),
+                        comment.getContent()
+                ))
                 .toList();
     }
 
@@ -51,12 +59,19 @@ public class CommentService {
 
         Comment updated = comment.update(commentUpdateCommand.content());
         Comment saved = commentRepository.updateComment(updated);
-        return new CommentDto(saved.getId(), saved.getPostId(), saved.getContent());
+        return new CommentDto(
+                saved.getId(),
+                saved.getPostId(),
+                saved.getContent()
+        );
     }
 
     @Transactional
     public void deleteComment(CommentDeleteCommand commentDeleteCommand) {
-        Comment comment = getCommentBelongingToPost(commentDeleteCommand.postId(), commentDeleteCommand.commentId());
+        Comment comment = getCommentBelongingToPost(
+                commentDeleteCommand.postId(),
+                commentDeleteCommand.commentId()
+        );
         commentRepository.deleteComment(comment.getId());
     }
 
