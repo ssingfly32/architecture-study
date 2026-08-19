@@ -39,3 +39,6 @@ out/
 ### 로컬 환경별 민감 정보 (커밋 금지, .example 파일 참고해서 직접 생성) ###
 application-local.properties
 .env
+
+### 부하테스트 결과 산출물 (실행할 때마다 생기는 결과 파일, 소스 아님) ###
+loadtest/results-*

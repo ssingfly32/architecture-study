@@ -59,12 +59,6 @@ public class PostPersistenceAdapter implements PostRepository {
 
     @Override
     public List<PostSummary> getAllPostSummaries() {
-        return postJpaRepository.findAll().stream()
-                .map(entity -> new PostSummary(
-                        entity.getId(),
-                        entity.getTitle(),
-                        entity.getComments().size()
-                ))
-                .toList();
+        return postJpaRepository.findAllSummaries();
     }
 }
