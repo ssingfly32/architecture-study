@@ -6,6 +6,8 @@ import com.sanghee.architecture_study.application.command.PostUpdateCommand;
 import com.sanghee.architecture_study.application.dto.PostDto;
 import com.sanghee.architecture_study.application.dto.PostSummaryDto;
 import com.sanghee.architecture_study.application.query.PostGetQuery;
+import com.sanghee.architecture_study.common.exception.BusinessException;
+import com.sanghee.architecture_study.common.exception.ErrorCode;
 import com.sanghee.architecture_study.domain.post.Post;
 import com.sanghee.architecture_study.domain.post.PostRepository;
 import org.springframework.stereotype.Service;
@@ -24,7 +26,7 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostDto getPost(PostGetQuery postGetQuery) {
         Post post = postRepository.getPostById(postGetQuery.id())
-                .orElseThrow(() -> new RuntimeException("post not found"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
         return new PostDto(
                 post.getId(),
                 post.getTitle(),
@@ -50,7 +52,7 @@ public class PostService {
     @Transactional
     public PostDto updatePost(PostUpdateCommand postUpdateCommand) {
         Post post = postRepository.getPostById(postUpdateCommand.id())
-                .orElseThrow(() -> new RuntimeException("post not found"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
         Post updated = post.update(postUpdateCommand.title(), postUpdateCommand.content());
         Post saved = postRepository.updatePost(updated);
         return new PostDto(
@@ -63,7 +65,7 @@ public class PostService {
     @Transactional
     public void deletePost(PostDeleteCommand postDeleteCommand) {
         Post post = postRepository.getPostById(postDeleteCommand.id())
-                .orElseThrow(() -> new RuntimeException("post not found"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
         postRepository.deletePost(post.getId());
     }
 
