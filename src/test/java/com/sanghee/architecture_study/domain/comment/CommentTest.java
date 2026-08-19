@@ -1,5 +1,7 @@
 package com.sanghee.architecture_study.domain.comment;
 
+import com.sanghee.architecture_study.common.exception.BusinessException;
+import com.sanghee.architecture_study.common.exception.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -25,7 +27,9 @@ class CommentTest {
         String content = "a".repeat(1001);
 
         assertThatThrownBy(() -> Comment.create(1, content))
-                .isInstanceOf(RuntimeException.class);
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.INVALID_CONTENT);
     }
 
     @Test

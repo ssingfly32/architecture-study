@@ -1,5 +1,7 @@
 package com.sanghee.architecture_study.domain.post;
 
+import com.sanghee.architecture_study.common.exception.BusinessException;
+import com.sanghee.architecture_study.common.exception.ErrorCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -27,7 +29,9 @@ class PostTest {
         String title = "a".repeat(51);
 
         assertThatThrownBy(() -> Post.create(title, "내용"))
-                .isInstanceOf(RuntimeException.class);
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.INVALID_TITLE);
     }
 
     @Test
@@ -36,7 +40,9 @@ class PostTest {
         String content = "a".repeat(1001);
 
         assertThatThrownBy(() -> Post.create("제목", content))
-                .isInstanceOf(RuntimeException.class);
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.INVALID_CONTENT);
     }
 
     @Test
@@ -62,6 +68,8 @@ class PostTest {
         String tooLongTitle = "a".repeat(51);
 
         assertThatThrownBy(() -> post.update(tooLongTitle, "내용"))
-                .isInstanceOf(RuntimeException.class);
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.INVALID_TITLE);
     }
 }

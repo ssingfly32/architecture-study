@@ -1,5 +1,8 @@
 package com.sanghee.architecture_study.domain.comment;
 
+import com.sanghee.architecture_study.common.exception.BusinessException;
+import com.sanghee.architecture_study.common.exception.ErrorCode;
+
 public class Comment {
     private final Integer id;
     private final Integer postId;
@@ -13,7 +16,7 @@ public class Comment {
 
     private static void validateContent(String content) {
         if (content.length() > 1000) {
-            throw new RuntimeException("내용은 1000자 이하여야 합니다.");
+            throw new BusinessException(ErrorCode.INVALID_CONTENT);
         }
     }
 

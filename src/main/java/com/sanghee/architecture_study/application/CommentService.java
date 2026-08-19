@@ -7,6 +7,8 @@ import com.sanghee.architecture_study.application.dto.CommentDto;
 import com.sanghee.architecture_study.application.query.CommentListQuery;
 import com.sanghee.architecture_study.domain.comment.Comment;
 import com.sanghee.architecture_study.domain.comment.CommentRepository;
+import com.sanghee.architecture_study.common.exception.BusinessException;
+import com.sanghee.architecture_study.common.exception.ErrorCode;
 import com.sanghee.architecture_study.domain.post.PostRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +29,7 @@ public class CommentService {
     @Transactional
     public CommentDto createComment(CommentCreateCommand commentCreateCommand) {
         postRepository.getPostById(commentCreateCommand.postId())
-                .orElseThrow(() -> new RuntimeException("post not found"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
         Comment comment = commentRepository.createComment(
                 Comment.create(commentCreateCommand.postId(), commentCreateCommand.content())
@@ -42,7 +44,7 @@ public class CommentService {
     @Transactional(readOnly = true)
     public List<CommentDto> getComments(CommentListQuery commentListQuery) {
         postRepository.getPostById(commentListQuery.postId())
-                .orElseThrow(() -> new RuntimeException("post not found"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.POST_NOT_FOUND));
 
         return commentRepository.getCommentsByPostId(commentListQuery.postId()).stream()
                 .map(comment -> new CommentDto(
@@ -77,10 +79,10 @@ public class CommentService {
 
     private Comment getCommentBelongingToPost(int postId, int commentId) {
         Comment comment = commentRepository.getCommentById(commentId)
-                .orElseThrow(() -> new RuntimeException("comment not found"));
+                .orElseThrow(() -> new BusinessException(ErrorCode.COMMENT_NOT_FOUND));
 
         if (!comment.getPostId().equals(postId)) {
-            throw new RuntimeException("comment does not belong to the post");
+            throw new BusinessException(ErrorCode.COMMENT_POST_MISMATCH);
         }
 
         return comment;

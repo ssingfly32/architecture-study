@@ -1,5 +1,8 @@
 package com.sanghee.architecture_study.domain.post;
 
+import com.sanghee.architecture_study.common.exception.BusinessException;
+import com.sanghee.architecture_study.common.exception.ErrorCode;
+
 // POJO: plain of java object
 public class Post {
     private final Integer id;
@@ -14,15 +17,15 @@ public class Post {
 
     private static void validateTitle(String title) {
         if (title.length() > 50) {
-            throw new RuntimeException("제목은 50자 이하여야 합니다.");
+            throw new BusinessException(ErrorCode.INVALID_TITLE);
         }
     }
 
     private static void validateContent(String content) {
-            if (content.length() > 1000) {
-                throw new RuntimeException("내용은 1000자 이하여야 합니다.");
-            }
+        if (content.length() > 1000) {
+            throw new BusinessException(ErrorCode.INVALID_CONTENT);
         }
+    }
 
     public static Post create(String title, String content) {
         validateTitle(title);

@@ -7,6 +7,8 @@ import com.sanghee.architecture_study.application.dto.CommentDto;
 import com.sanghee.architecture_study.application.query.CommentListQuery;
 import com.sanghee.architecture_study.domain.comment.Comment;
 import com.sanghee.architecture_study.domain.comment.CommentRepository;
+import com.sanghee.architecture_study.common.exception.BusinessException;
+import com.sanghee.architecture_study.common.exception.ErrorCode;
 import com.sanghee.architecture_study.domain.post.Post;
 import com.sanghee.architecture_study.domain.post.PostRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -64,7 +66,9 @@ class CommentServiceTest {
         given(postRepository.getPostById(1)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> commentService.createComment(new CommentCreateCommand(1, "댓글 내용")))
-                .isInstanceOf(RuntimeException.class);
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.POST_NOT_FOUND);
 
         verify(commentRepository, never()).createComment(any(Comment.class));
     }
@@ -93,7 +97,9 @@ class CommentServiceTest {
         given(postRepository.getPostById(1)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> commentService.getComments(new CommentListQuery(1)))
-                .isInstanceOf(RuntimeException.class);
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.POST_NOT_FOUND);
     }
 
     @Test
@@ -115,7 +121,9 @@ class CommentServiceTest {
         given(commentRepository.getCommentById(10)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> commentService.updateComment(new CommentUpdateCommand(1, 10, "새 내용")))
-                .isInstanceOf(RuntimeException.class);
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.COMMENT_NOT_FOUND);
     }
 
     @Test
@@ -125,7 +133,9 @@ class CommentServiceTest {
                 .willReturn(Optional.of(new Comment(10, 99, "내용")));
 
         assertThatThrownBy(() -> commentService.updateComment(new CommentUpdateCommand(1, 10, "새 내용")))
-                .isInstanceOf(RuntimeException.class);
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.COMMENT_POST_MISMATCH);
 
         verify(commentRepository, never()).updateComment(any(Comment.class));
     }
@@ -147,7 +157,9 @@ class CommentServiceTest {
         given(commentRepository.getCommentById(10)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> commentService.deleteComment(new CommentDeleteCommand(1, 10)))
-                .isInstanceOf(RuntimeException.class);
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.COMMENT_NOT_FOUND);
 
         verify(commentRepository, never()).deleteComment(anyInt());
     }
@@ -159,7 +171,9 @@ class CommentServiceTest {
                 .willReturn(Optional.of(new Comment(10, 99, "내용")));
 
         assertThatThrownBy(() -> commentService.deleteComment(new CommentDeleteCommand(1, 10)))
-                .isInstanceOf(RuntimeException.class);
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.COMMENT_POST_MISMATCH);
 
         verify(commentRepository, never()).deleteComment(anyInt());
     }

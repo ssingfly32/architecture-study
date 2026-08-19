@@ -6,6 +6,8 @@ import com.sanghee.architecture_study.application.command.PostUpdateCommand;
 import com.sanghee.architecture_study.application.dto.PostDto;
 import com.sanghee.architecture_study.application.dto.PostSummaryDto;
 import com.sanghee.architecture_study.application.query.PostGetQuery;
+import com.sanghee.architecture_study.common.exception.BusinessException;
+import com.sanghee.architecture_study.common.exception.ErrorCode;
 import com.sanghee.architecture_study.domain.post.Post;
 import com.sanghee.architecture_study.domain.post.PostRepository;
 import com.sanghee.architecture_study.domain.post.PostSummary;
@@ -78,7 +80,9 @@ class PostServiceTest {
         given(postRepository.getPostById(1)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> postService.getPost(new PostGetQuery(1)))
-                .isInstanceOf(RuntimeException.class);
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.POST_NOT_FOUND);
     }
 
     @Test
@@ -106,7 +110,9 @@ class PostServiceTest {
         given(postRepository.getPostById(1)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> postService.updatePost(new PostUpdateCommand(1, "제목", "내용")))
-                .isInstanceOf(RuntimeException.class);
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.POST_NOT_FOUND);
 
         verify(postRepository, never()).updatePost(any(Post.class));
     }
@@ -128,7 +134,9 @@ class PostServiceTest {
         given(postRepository.getPostById(1)).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> postService.deletePost(new PostDeleteCommand(1)))
-                .isInstanceOf(RuntimeException.class);
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.POST_NOT_FOUND);
 
         verify(postRepository, never()).deletePost(1);
     }
