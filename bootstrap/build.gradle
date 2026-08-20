@@ -1,0 +1,6 @@
+dependencies {
+	implementation project(':presentation')
+	implementation project(':infra')
+
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+}

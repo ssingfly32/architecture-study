@@ -1,0 +1,3 @@
+dependencies {
+	// HttpStatus 제거 후 순수 Java — 의존성 없음
+}

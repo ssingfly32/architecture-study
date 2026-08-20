@@ -49,4 +49,4 @@ loadtest/jmeter/live-resources*.csv
 loadtest/jmeter/live-response-buckets.csv
 
 ### QueryDSL이 생성하는 Q클래스 (빌드할 때마다 자동 생성됨, 소스 아님) ###
-src/main/generated/
+infra/src/main/generated/
