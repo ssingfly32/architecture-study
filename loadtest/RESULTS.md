@@ -6,6 +6,7 @@
 - DB: 동일한 PostgreSQL 데이터(게시글 10,000건 + 댓글 30,000건, `scripts/seed.sql`)를 before/after 양쪽에서 그대로 재사용 → 코드 차이 외 변수 제거
 - Before: `12732b1` (N+1 존재, QueryDSL 적용 전) / After: 현재 브랜치 (`9af19d5`에서 QueryDSL LEFT JOIN + GROUP BY로 개선)
 - 원본 데이터: `loadtest/results-before/`(before.jtl, resources.csv, before-actuator.jtl, before-actuator-resources.csv), `loadtest/results-after-jmeter/`(after.jtl, resources.csv)
+- 참고: `loadtest/get-posts.js`(k6)는 N+1 개선 직후 TPS/응답시간만 빠르게 확인하던 초기 스크립트이고, 이 문서의 분석은 전부 `loadtest/jmeter/`(JMeter) 쪽 데이터를 기준으로 한다. 둘의 TPS 배율이 다르게 나오는 건 도구/측정 시점이 달라서이지 모순이 아니다.
 
 ## 요약 비교
 
