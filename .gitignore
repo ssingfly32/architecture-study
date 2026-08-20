@@ -42,3 +42,6 @@ application-local.properties
 
 ### 부하테스트 결과 산출물 (실행할 때마다 생기는 결과 파일, 소스 아님) ###
 loadtest/results-*
+
+### QueryDSL이 생성하는 Q클래스 (빌드할 때마다 자동 생성됨, 소스 아님) ###
+src/main/generated/
