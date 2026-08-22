@@ -1,1 +1,8 @@
 rootProject.name = 'architecture-study'
+
+include 'common'
+include 'domain'
+include 'application'
+include 'infra'
+include 'presentation'
+include 'bootstrap'
