@@ -3,4 +3,17 @@ dependencies {
 	implementation project(':infra')
 
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+	testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
+	testImplementation 'org.testcontainers:testcontainers-postgresql'
+}
+
+// 메인 클래스(부트스트랩 한 줄짜리 진입점)는 커버리지 대상에서 뺀다.
+jacocoTestReport {
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: ['**/ArchitectureStudyApplication.class'])
+		}))
+	}
 }
