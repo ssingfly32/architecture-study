@@ -1,54 +1,71 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '4.1.0'
-	id 'io.spring.dependency-management' version '1.1.7'
-	id 'jacoco'
+	id 'org.springframework.boot' version '4.1.0' apply false
+	id 'io.spring.dependency-management' version '1.1.7' apply false
 }
 
-group = 'com.sanghee'
-version = '0.0.1-SNAPSHOT'
+allprojects {
+	group = 'com.sanghee'
+	version = '0.0.1-SNAPSHOT'
 
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
+	repositories {
+		mavenCentral()
 	}
 }
 
-repositories {
-	mavenCentral()
-}
+subprojects {
+	apply plugin: 'java'
+	apply plugin: 'io.spring.dependency-management'
+	apply plugin: 'jacoco'
 
-dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter'
-	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	runtimeOnly 'org.postgresql:postgresql'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
+	java {
+		toolchain {
+			languageVersion = JavaLanguageVersion.of(17)
+		}
+	}
 
-test {
-	finalizedBy jacocoTestReport // report is always generated after tests run
-}
+	tasks.withType(JavaCompile).configureEach {
+		options.encoding = 'UTF-8'
+		// 단일 모듈일 땐 org.springframework.boot 플러그인이 자동으로 붙여주던 옵션.
+		// 이제 그 플러그인은 bootstrap 모듈에만 적용되므로, @PathVariable처럼 이름 없이
+		// 리플렉션으로 파라미터명을 읽는 코드(presentation 등)를 위해 전 모듈에 명시한다.
+		options.compilerArgs << '-parameters'
+	}
 
-jacocoTestReport {
-	dependsOn test // tests are required to run before generating the report
-}
+	tasks.withType(Test).configureEach {
+		systemProperty 'file.encoding', 'UTF-8'
+	}
 
-jacoco {
-	toolVersion = "0.8.14"
-	reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
-}
+	dependencyManagement {
+		imports {
+			mavenBom "org.springframework.boot:spring-boot-dependencies:4.1.0"
+		}
+	}
 
-jacocoTestReport {
-	reports {
-		xml.required = false
-		csv.required = false
-		html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+	dependencies {
+		testImplementation 'org.springframework.boot:spring-boot-starter-test'
+		testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	}
+
+	tasks.named('test') {
+		useJUnitPlatform()
+		finalizedBy jacocoTestReport
+	}
+
+	jacocoTestReport {
+		dependsOn test
+		reports {
+			xml.required = false
+			csv.required = false
+			html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
+		}
+	}
+
+	jacoco {
+		toolVersion = "0.8.14"
+		reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
 	}
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
+project(':bootstrap') {
+	apply plugin: 'org.springframework.boot'
 }

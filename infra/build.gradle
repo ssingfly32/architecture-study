@@ -1,0 +1,45 @@
+dependencies {
+	implementation project(':domain')
+
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	runtimeOnly 'org.postgresql:postgresql'
+
+	implementation 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
+	annotationProcessor 'com.querydsl:querydsl-apt:5.1.0:jakarta'
+	annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
+	annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
+	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+	// Testcontainers 2.x부터 아티팩트명이 testcontainers-* 접두사로 바뀌었다
+	// (예전 1.x의 org.testcontainers:postgresql / junit-jupiter가 아님).
+	testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
+	testImplementation 'org.testcontainers:testcontainers-postgresql'
+}
+
+// QueryDSL이 생성하는 Q클래스를 build/가 아니라 별도 소스 폴더에 두고,
+// 소스 루트로 명시적으로 등록해서 IDE가 항상 안정적으로 인식하게 한다.
+// ./gradlew clean을 실행하면 이 폴더도 같이 지워서, 오래된(엔티티와 안 맞는)
+// 생성 코드가 남아있지 않도록 한다.
+def querydslDir = "src/main/generated"
+
+sourceSets {
+	main.java.srcDirs += querydslDir
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.generatedSourceOutputDirectory.set(file(querydslDir))
+}
+
+clean {
+	delete file(querydslDir)
+}
+
+// QueryDSL이 자동 생성하는 Q클래스는 우리가 짠 코드가 아니라서 커버리지 대상에서 뺀다.
+jacocoTestReport {
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, exclude: ['**/Q*.class'])
+		}))
+	}
+}
